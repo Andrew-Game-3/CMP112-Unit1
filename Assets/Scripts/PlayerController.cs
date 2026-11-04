@@ -2,49 +2,72 @@ using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
+
+
 public class PlayerController : MonoBehaviour
 {
+    //intialise variables
     public float speed = 1.0f;
-    public float jumpForce = 1.0f;
-    Rigidbody2D rb;
+    public float jumpForce = 10f;
+    private Rigidbody2D rb;
     private Boolean onGround = true;
+    private float moveInput;
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+
+
+    private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
- 
-  
     }
 
-    // Update is called once per frame
-    void Update()
+
+
+    private void Jump()
     {
-        if (Input.GetKey(KeyCode.LeftArrow) || Input.GetKey(KeyCode.A))
-            {
-            
-            rb.AddForce(-transform.right * speed);
-        }
-        if (Input.GetKey(KeyCode.RightArrow) || Input.GetKey(KeyCode.D))
+        rb.linearVelocityY = jumpForce;
+    }
+
+        void Start()
         {
-            
-            rb.AddForce(transform.right * speed);
+
+
+
         }
-        if (Input.GetKey(KeyCode.Space) && onGround)
-            {
-                
-                rb.AddForce(transform.up * jumpForce, ForceMode2D.Impulse);
+
+
+        void Update()
+        {
+        //gets the keyboard keys currenty in use
+        Keyboard kb = Keyboard.current;
+
+        //checking for move
+        moveInput = 0f;
+        if (kb.aKey.isPressed)
+        {
+            moveInput = -1f;
+        }
+        if (kb.dKey.isPressed)
+        {
+            moveInput = 1f;
+        }
+
+        //check for jump 
+        if (kb.spaceKey.wasPressedThisFrame && onGround)
+        {
             onGround = false;
-            }
-        if (Input.GetKey(KeyCode.LeftControl))
-        {
-            Debug.Log("L ctrl pressed");
-            
+            Jump();
         }
+    }
+
+    private void FixedUpdate()
+    {
+        rb.linearVelocityX = moveInput * speed;
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
         onGround = true;
     }
+
+
 }
