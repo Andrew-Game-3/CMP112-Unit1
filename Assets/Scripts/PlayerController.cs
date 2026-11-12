@@ -2,72 +2,49 @@ using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using System.Collections;
-using System.Reflection.Metadata.Ecma335;
+
 
 
 
 public class PlayerController : MonoBehaviour
 {
+
     //intialise variables
 
-    //variables for jumping and moving
-    public float speed = 1.0f;
-    public float jumpForce = 10f;
-    private Rigidbody2D rb;
-    private Boolean onGround = true;
-    private float moveInput;
+    public float speed = 8f;
 
-    //varibales for dashing
+    public float jumpPower = 14f;
+
     public float dashSpeed = 20f;
-    public float dashLength = 0.2f;
-    public float dashCD = 0.5f;
+    public float dashDuration = 0.15f;
+    public float dashCooldown = 0.5f;
 
+    public Transform groundCheck;
+    public float groundCheckRadius = 0.2f;
+    public LayerMask groundLayer;
+
+    private Rigidbody2D rb;
+    private float moveInput;
     private TrailRenderer trailRenderer;
     private int facingDirection = 1;
     private float defaultGravityScale;
     private bool isDashing;
     private bool canDash = true;
 
-
-        
-
-
     private void Awake()
     {
-        rb = GetComponent<Rigidbody2D>();
-        trailRenderer = rb.GetComponent<TrailRenderer>();
-
+     rb = GetComponent<Rigidbody2D>();
+     trailRenderer = GetComponent<TrailRenderer>();
         defaultGravityScale = rb.gravityScale;
     }
 
-
-
-    private void Jump()
+    private void ReadInput()
     {
-        rb.linearVelocityY = jumpForce;
-    }
-
-        void Start()
-        {
-
-
-
-        }
-
-
-        void Update()
-        {
-        //gets the keyboard keys currenty in use
         Keyboard kb = Keyboard.current;
 
-        //checking for move
         moveInput = 0f;
 
-        if (isDashing)
-        {
-            //stops player doing other things while dashing
-            return;
-        }
+        //left and right inputs
         if (kb.aKey.isPressed)
         {
             moveInput = -1f;
@@ -76,49 +53,85 @@ public class PlayerController : MonoBehaviour
         {
             moveInput = 1f;
         }
-        if(moveInput != 0f)
 
+        //get direction for dsahing
+        if(moveInput != 0f)
         {
             facingDirection = (int)moveInput;
         }
-        //check for jump 
-        if (kb.spaceKey.wasPressedThisFrame && onGround)
+
+        //jump input
+        if(kb.spaceKey.wasPressedThisFrame)
         {
-            onGround = false;
             Jump();
         }
-        if(kb.leftShiftKey.wasPressedThisFrame &&canDash)
+
+        //dash input
+        if(kb.leftShiftKey.wasPressedThisFrame && canDash)
         {
             StartCoroutine(Dash());
         }
     }
 
+    private void Update()
+    {
+        ReadInput();
+    }
+
     private void FixedUpdate()
     {
+        Move();
+    }
+
+    private void Jump()
+    {
+        //stops jumping while dash is happening
+        if (isDashing)
+        {
+            return;
+        }
+        if (isGrounded())
+        {
+            rb.linearVelocityY = jumpPower;
+        }
+    }
+
+    private bool isGrounded()
+    {
+        return Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, groundLayer);
+    }
+
+    private void Move()
+    {
+        //stops moevement while dashing
+        if (isDashing)
+        {
+            return;
+        }
         rb.linearVelocityX = moveInput * speed;
     }
-
-    private void OnCollisionEnter2D(Collision2D collision)
-    {
-        onGround = true;
-    }
-
+       
     private IEnumerator Dash()
     {
         isDashing = true;
         canDash = false;
         rb.gravityScale = 0;
-        rb.linearVelocityX = facingDirection * dashSpeed;
+        rb.linearVelocity = new Vector2(dashSpeed * facingDirection, 0f);
         trailRenderer.emitting = true;
 
-        yield return new WaitForSeconds(dashLength);
+        yield return new WaitForSeconds(dashDuration);
 
         isDashing = false;
         rb.gravityScale = defaultGravityScale;
         rb.linearVelocityX *= 0.5f;
         trailRenderer.emitting = false;
 
-        yield return new WaitForSeconds(dashCD);
+        yield return new WaitForSeconds(dashCooldown);
+        canDash = true;
     }
+
+
+  
+   
 
 }

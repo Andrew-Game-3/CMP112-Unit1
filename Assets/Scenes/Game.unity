@@ -129,10 +129,10 @@ GameObject:
   m_Component:
   - component: {fileID: 205431240}
   - component: {fileID: 205431239}
-  - component: {fileID: 205431242}
   - component: {fileID: 205431241}
   - component: {fileID: 205431243}
   - component: {fileID: 205431244}
+  - component: {fileID: 205431245}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -212,7 +212,8 @@ Transform:
   m_LocalPosition: {x: -0.88, y: -0.67, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 480810415}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!50 &205431241
@@ -230,7 +231,7 @@ Rigidbody2D:
   m_Mass: 1
   m_LinearDamping: 0
   m_AngularDamping: 0.05
-  m_GravityScale: 1.1
+  m_GravityScale: 2
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
@@ -242,7 +243,29 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 4
---- !u!60 &205431242
+--- !u!114 &205431243
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 205431238}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 593baf26a9151a14a9e2feb1499d3935, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerController
+  speed: 5
+  jumpPower: 10
+  dashSpeed: 20
+  dashDuration: 0.15
+  dashCooldown: 0.5
+  groundCheck: {fileID: 480810415}
+  groundCheckRadius: 0.2
+  groundLayer:
+    serializedVersion: 2
+    m_Bits: 64
+--- !u!60 &205431244
 PolygonCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -303,24 +326,7 @@ PolygonCollider2D:
       - {x: 0.35999998, y: -0.34}
       - {x: 0.38, y: -0.29}
   m_UseDelaunayMesh: 1
---- !u!114 &205431243
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 205431238}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 593baf26a9151a14a9e2feb1499d3935, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::PlayerController
-  speed: 5
-  jumpForce: 9
-  dashSpeed: 20
-  dashLength: 0.2
-  dashCD: 0.5
---- !u!96 &205431244
+--- !u!96 &205431245
 TrailRenderer:
   serializedVersion: 4
   m_ObjectHideFlags: 0
@@ -439,6 +445,37 @@ TrailRenderer:
   m_Autodestruct: 0
   m_Emitting: 0
   m_ApplyActiveColorSpace: 1
+--- !u!1 &480810414
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 480810415}
+  m_Layer: 0
+  m_Name: GroundCheck
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &480810415
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 480810414}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: -0.486, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 205431240}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &484221374
 GameObject:
   m_ObjectHideFlags: 0
@@ -453,7 +490,7 @@ GameObject:
   - component: {fileID: 484221380}
   - component: {fileID: 484221379}
   - component: {fileID: 484221378}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Platform Tilemap
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1861,5 +1898,5 @@ SceneRoots:
   - {fileID: 205431240}
   - {fileID: 1379135876}
   - {fileID: 980478869}
-  - {fileID: 1724834847}
   - {fileID: 2632181982778691808}
+  - {fileID: 1724834847}
