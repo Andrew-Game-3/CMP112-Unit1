@@ -23,6 +23,11 @@ public class PlayerController : MonoBehaviour
     public float groundCheckRadius = 0.2f;
     public LayerMask groundLayer;
 
+    public float wallSlideSpeed = 2f;
+    public float wallCheckDistance = 0.5f;
+    public Vector2 wallJumpForce = new Vector2(10f, 14f);
+    public float wallJumpDuration = 0.2f;
+
     private Rigidbody2D rb;
     private float moveInput;
     private TrailRenderer trailRenderer;
@@ -30,6 +35,8 @@ public class PlayerController : MonoBehaviour
     private float defaultGravityScale;
     private bool isDashing;
     private bool canDash = true;
+    private bool isWallSliding;
+    private bool isWalljumping;
 
     private void Awake()
     {
@@ -81,6 +88,7 @@ public class PlayerController : MonoBehaviour
     private void FixedUpdate()
     {
         Move();
+        WallSlide();
     }
 
     private void Jump()
@@ -94,6 +102,11 @@ public class PlayerController : MonoBehaviour
         {
             rb.linearVelocityY = jumpPower;
         }
+        //we want to jump off wall but no ground
+        else if (isWallSliding)
+        {
+            StartCoroutine(wallJump());
+        }
     }
 
     private bool isGrounded()
@@ -103,8 +116,8 @@ public class PlayerController : MonoBehaviour
 
     private void Move()
     {
-        //stops moevement while dashing
-        if (isDashing)
+        //stops moevement while dashing or walljumping
+        if (isDashing || isWalljumping)
         {
             return;
         }
@@ -130,8 +143,33 @@ public class PlayerController : MonoBehaviour
         canDash = true;
     }
 
-
+    private bool isTouchingWall()
+    {
+        Vector2 checkPos = (Vector2)transform.position + Vector2.right * facingDirection * wallCheckDistance;
+        return Physics2D.OverlapCircle(checkPos, groundCheckRadius, groundLayer);
+    }
   
-   
+   private void WallSlide()
+    {
+        isWallSliding = isTouchingWall() && !isGrounded()  && !isWalljumping;
+
+        if(isWallSliding)
+        {
+            rb.linearVelocityY = Mathf.Max(rb.linearVelocityY, -wallSlideSpeed);
+        }
+
+        trailRenderer.emitting = isWallSliding || isDashing;
+    }
+
+    private IEnumerator wallJump()
+    {
+        isWalljumping = true;
+        facingDirection = -facingDirection;
+        rb.linearVelocity = new Vector2(facingDirection * wallJumpForce.x, wallJumpForce.y);
+
+        yield return new WaitForSeconds(wallJumpDuration);
+
+        isWalljumping = false;
+    }
 
 }
