@@ -32,6 +32,11 @@ public class PlayerController : MonoBehaviour
     //coyote time variables
     public float coyoteTime = 0.1f;
 
+    //range means thi svariable cannever be outside this range
+    [Range(0f, 1f)]public float jumpCutMultiplier = 0.5f;
+    public float fallMultiplier = 1.8f;
+    public float lowJumpMultiplier = 2.5f;
+
     private Rigidbody2D rb;
     private float moveInput;
 
@@ -82,6 +87,10 @@ public class PlayerController : MonoBehaviour
         {
             jumpBufferCounter = jumpBufferTime;
         }
+        if(kb.spaceKey.wasReleasedThisFrame)
+        {
+            CutJump();
+        }
 
         //dash input
         if(kb.leftShiftKey.wasPressedThisFrame && canDash)
@@ -101,6 +110,7 @@ public class PlayerController : MonoBehaviour
     {
         Move();
         WallSlide();
+        ApplyBetterGravity();
     }
 
     private void Jump()
@@ -200,4 +210,33 @@ public class PlayerController : MonoBehaviour
             jumpBufferCounter = jumpBufferCounter - Time.deltaTime;
     }
 
+    private void CutJump()
+
+    {
+        //checks if we are moving up - so probably jumping
+        if(rb.linearVelocityY > 0f)
+        {
+            rb.linearVelocityY = rb.linearVelocityY * jumpCutMultiplier;
+        }
+    }
+
+    private void ApplyBetterGravity()
+    {
+        if(isDashing || isWallSliding) 
+            { return; }
+
+        //if y < 0 we are falling
+        if (rb.linearVelocityY < 0f)
+        {
+            rb.gravityScale = defaultGravityScale * fallMultiplier;
+        }
+        else if (rb.linearVelocityY > 0f && !Keyboard.current.spaceKey.isPressed)
+        {
+            rb.gravityScale = defaultGravityScale * lowJumpMultiplier;
+        }
+        else
+        {
+            rb.gravityScale = defaultGravityScale;
+        }
+    }
 }
