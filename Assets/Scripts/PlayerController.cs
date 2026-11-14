@@ -28,6 +28,8 @@ public class PlayerController : MonoBehaviour
     public Vector2 wallJumpForce = new Vector2(10f, 14f);
     public float wallJumpDuration = 0.2f;
 
+    public float jumpBufferTime = 0.1f;
+
     private Rigidbody2D rb;
     private float moveInput;
     private TrailRenderer trailRenderer;
@@ -37,6 +39,7 @@ public class PlayerController : MonoBehaviour
     private bool canDash = true;
     private bool isWallSliding;
     private bool isWalljumping;
+    private float jumpBufferCounter;
 
     private void Awake()
     {
@@ -70,7 +73,7 @@ public class PlayerController : MonoBehaviour
         //jump input
         if(kb.spaceKey.wasPressedThisFrame)
         {
-            Jump();
+            jumpBufferCounter = jumpBufferTime;
         }
 
         //dash input
@@ -82,7 +85,9 @@ public class PlayerController : MonoBehaviour
 
     private void Update()
     {
+        UpdateJumpTimers();
         ReadInput();
+        Jump();
     }
 
     private void FixedUpdate()
@@ -94,18 +99,20 @@ public class PlayerController : MonoBehaviour
     private void Jump()
     {
         //stops jumping while dash is happening
-        if (isDashing)
+        if (isDashing || jumpBufferCounter <= 0f)
         {
             return;
         }
         if (isGrounded())
         {
             rb.linearVelocityY = jumpPower;
+            jumpBufferCounter = 0f;
         }
         //we want to jump off wall but no ground
         else if (isWallSliding)
         {
             StartCoroutine(wallJump());
+            jumpBufferCounter = 0f;
         }
     }
 
@@ -170,6 +177,11 @@ public class PlayerController : MonoBehaviour
         yield return new WaitForSeconds(wallJumpDuration);
 
         isWalljumping = false;
+    }
+
+    private void UpdateJumpTimers()
+    {
+        jumpBufferCounter = jumpBufferCounter - Time.deltaTime;
     }
 
 }
