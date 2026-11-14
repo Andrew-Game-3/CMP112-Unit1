@@ -48,6 +48,14 @@ public class PlayerController : MonoBehaviour
     public float fallMultiplier = 1.8f;
     public float lowJumpMultiplier = 2.5f;
 
+    //ladder variables
+    public float climbSpeed = 5f;
+    public float ladderCheckRadius = 0.5f;
+    public LayerMask LadderLayer;
+    private float verticalInput;
+    private bool isClimbing;
+
+
     private Rigidbody2D rb;
     private float moveInput;
 
@@ -95,6 +103,17 @@ public class PlayerController : MonoBehaviour
         {
             StartCoroutine(Dash());
         }
+
+        //ladder inputs
+        verticalInput = 0f;
+        if (kb.wKey.isPressed)
+        {
+            verticalInput = 1f;
+        }
+        if(kb.sKey.isPressed)
+        {
+            verticalInput = -1f;
+        }
     }
 
     private void Update()
@@ -109,6 +128,7 @@ public class PlayerController : MonoBehaviour
         Move();
         WallSlide();
         ApplyBetterGravity();
+        HandleLadder();
     }
 
     private void Jump()
@@ -118,6 +138,17 @@ public class PlayerController : MonoBehaviour
         {
             return;
         }
+
+        //lets player jump off ladders
+        if (isClimbing)
+        {
+            isClimbing = false;
+            rb.gravityScale = defaultGravityScale;
+            rb.linearVelocityY = jumpPower;
+            jumpBufferCounter = 0f;
+            return;
+        }
+
         if (coyoteTimer > 0f)
         {
             rb.linearVelocityY = jumpPower;
@@ -174,7 +205,7 @@ public class PlayerController : MonoBehaviour
   
    private void WallSlide()
     {
-        isWallSliding = isTouchingWall() && !isGrounded()  && !isWalljumping;
+        isWallSliding = isTouchingWall() && !isGrounded() && !isWalljumping && !isClimbing;
 
         if(isWallSliding)
         {
@@ -236,5 +267,46 @@ public class PlayerController : MonoBehaviour
         {
             rb.gravityScale = defaultGravityScale;
         }
+    }
+
+    private bool isOnLadder()
+    {
+        //creates a circle. If cirlce overlaps with ladder, it will return true, otherwise the method will return false
+        return Physics2D.OverlapCircle(transform.position, ladderCheckRadius, LadderLayer);
+    }
+
+    private void HandleLadder()
+    {
+        bool onLadder = isOnLadder();
+
+        //checks if player on ladder and moving
+        if (onLadder && verticalInput != 0f)
+        {
+            isClimbing = true;
+        }
+
+       //ensures nothing under this will happen if not on ladder or dashing
+        if (!onLadder)
+        {
+            rb.gravityScale = defaultGravityScale;
+            isClimbing = false;
+            return;
+        }
+        if(isDashing)
+        {
+            return;
+        }
+
+        if (isClimbing)
+        {
+            rb.gravityScale = 0f;
+            rb.linearVelocityY = verticalInput * climbSpeed;
+        }
+        else
+        {
+            rb.gravityScale = defaultGravityScale;
+        }
+
+
     }
 }
