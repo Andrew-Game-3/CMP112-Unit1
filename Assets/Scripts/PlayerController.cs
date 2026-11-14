@@ -59,6 +59,8 @@ public class PlayerController : MonoBehaviour
     private Rigidbody2D rb;
     private float moveInput;
 
+    private MovingPlatform movingPlatform;
+
     private void Awake()
     {
      rb = GetComponent<Rigidbody2D>();
@@ -175,7 +177,13 @@ public class PlayerController : MonoBehaviour
         {
             return;
         }
-        rb.linearVelocityX = moveInput * speed;
+
+        Vector2 movingPlatformSpeed = Vector2.zero;
+        if(movingPlatform != null)
+        {
+            movingPlatformSpeed = movingPlatform.platformSpeed;
+        }
+        rb.linearVelocityX = moveInput * speed + movingPlatformSpeed.x;
     }
        
     private IEnumerator Dash()
@@ -306,7 +314,21 @@ public class PlayerController : MonoBehaviour
         {
             rb.gravityScale = defaultGravityScale;
         }
+    }
 
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        if(collision.gameObject.GetComponent<MovingPlatform>() != null)
+        {
+            movingPlatform = collision.gameObject.GetComponent<MovingPlatform>();
+        }
+    }
 
+    private void OnCollisionExit(Collision collision)
+    {
+        if (collision.gameObject.GetComponent<MovingPlatform>() != null)
+        {
+            movingPlatform = null;
+        }
     }
 }
