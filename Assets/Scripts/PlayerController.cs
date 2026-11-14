@@ -61,6 +61,12 @@ public class PlayerController : MonoBehaviour
 
     private MovingPlatform movingPlatform;
 
+    public float crouchSpeedMultiplier = 0.4f;
+    public float cellingCheckHeight = 0.95f;
+    public float cellingCheckRadius = 0.2f;
+    private bool isCrouching;
+    private bool isCollidorCrouched;
+
     private void Awake()
     {
      rb = GetComponent<Rigidbody2D>();
@@ -127,6 +133,7 @@ public class PlayerController : MonoBehaviour
 
     private void FixedUpdate()
     {
+        HandleCrouch();
         Move();
         WallSlide();
         ApplyBetterGravity();
@@ -183,7 +190,11 @@ public class PlayerController : MonoBehaviour
         {
             movingPlatformSpeed = movingPlatform.platformSpeed;
         }
-        rb.linearVelocityX = moveInput * speed + movingPlatformSpeed.x;
+
+        // ? makes if statement like "if : else"
+        float crouchMoveSpeed = isCrouching ? crouchSpeedMultiplier : 1f;
+
+        rb.linearVelocityX = crouchMoveSpeed * moveInput * speed + movingPlatformSpeed.x;
     }
        
     private IEnumerator Dash()
@@ -330,5 +341,40 @@ public class PlayerController : MonoBehaviour
         {
             movingPlatform = null;
         }
+    }
+
+    private void HandleCrouch()
+    {
+        if(isClimbing)
+        {
+            return;
+        }
+
+        //checks if we're pressing the s key, as if we are, this will be true
+        bool wantsToCrouch = verticalInput < 0f;
+
+        //either if we pressing s key or stuck in a small hole already crouching
+        isCrouching = wantsToCrouch || (isCrouching && HasCelling());
+
+        SetCrouched(isCrouching);
+
+    }
+
+    private void SetCrouched(bool crouched)
+    {
+        if(crouched == isCollidorCrouched)
+        {
+            return;
+        }
+        isCollidorCrouched = crouched;
+        //? creates a ternay statement (like an if statement in one line)
+        transform.localScale = crouched ? new Vector3(1f, 0.475f, 1f) : Vector3.one;
+    }
+
+    private bool HasCelling()
+    {
+        Vector2 checkPos = (Vector2)transform.position + Vector2.up * cellingCheckHeight;
+        //creates circle and checks if touching celling of a ground layer object
+        return Physics2D.OverlapCircle(checkPos, cellingCheckRadius, groundLayer);
     }
 }
