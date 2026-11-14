@@ -12,34 +12,41 @@ public class PlayerController : MonoBehaviour
     //intialise variables
 
     public float speed = 8f;
-
+    
     public float jumpPower = 14f;
-
+    //variables for dashing
     public float dashSpeed = 20f;
     public float dashDuration = 0.15f;
     public float dashCooldown = 0.5f;
-
+    //variables for jump ground check
     public Transform groundCheck;
     public float groundCheckRadius = 0.2f;
     public LayerMask groundLayer;
-
+    //variables for wall slide
     public float wallSlideSpeed = 2f;
     public float wallCheckDistance = 0.5f;
     public Vector2 wallJumpForce = new Vector2(10f, 14f);
     public float wallJumpDuration = 0.2f;
-
+    //variables for jump buffer
     public float jumpBufferTime = 0.1f;
+    //coyote time variables
+    public float coyoteTime = 0.1f;
 
     private Rigidbody2D rb;
     private float moveInput;
+
     private TrailRenderer trailRenderer;
     private int facingDirection = 1;
     private float defaultGravityScale;
     private bool isDashing;
     private bool canDash = true;
+
     private bool isWallSliding;
     private bool isWalljumping;
+
     private float jumpBufferCounter;
+
+    private float coyoteTimer;
 
     private void Awake()
     {
@@ -103,10 +110,11 @@ public class PlayerController : MonoBehaviour
         {
             return;
         }
-        if (isGrounded())
+        if (coyoteTimer > 0f)
         {
             rb.linearVelocityY = jumpPower;
             jumpBufferCounter = 0f;
+            coyoteTimer = 0f;
         }
         //we want to jump off wall but no ground
         else if (isWallSliding)
@@ -181,7 +189,15 @@ public class PlayerController : MonoBehaviour
 
     private void UpdateJumpTimers()
     {
-        jumpBufferCounter = jumpBufferCounter - Time.deltaTime;
+        if (isGrounded() && rb.linearVelocityY <= 0.01f)
+        {
+            coyoteTimer = coyoteTime;
+        }
+        else
+        {
+            coyoteTimer = coyoteTimer -Time.deltaTime;
+        }
+            jumpBufferCounter = jumpBufferCounter - Time.deltaTime;
     }
 
 }
