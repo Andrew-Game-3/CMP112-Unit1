@@ -14,44 +14,42 @@ public class PlayerController : MonoBehaviour
     public float speed = 8f;
     
     public float jumpPower = 14f;
+    
     //variables for dashing
     public float dashSpeed = 20f;
     public float dashDuration = 0.15f;
     public float dashCooldown = 0.5f;
-    //variables for jump ground check
-    public Transform groundCheck;
-    public float groundCheckRadius = 0.2f;
-    public LayerMask groundLayer;
-    //variables for wall slide
-    public float wallSlideSpeed = 2f;
-    public float wallCheckDistance = 0.5f;
-    public Vector2 wallJumpForce = new Vector2(10f, 14f);
-    public float wallJumpDuration = 0.2f;
-    //variables for jump buffer
-    public float jumpBufferTime = 0.1f;
-    //coyote time variables
-    public float coyoteTime = 0.1f;
-
-    //range means thi svariable cannever be outside this range
-    [Range(0f, 1f)]public float jumpCutMultiplier = 0.5f;
-    public float fallMultiplier = 1.8f;
-    public float lowJumpMultiplier = 2.5f;
-
-    private Rigidbody2D rb;
-    private float moveInput;
-
     private TrailRenderer trailRenderer;
     private int facingDirection = 1;
     private float defaultGravityScale;
     private bool isDashing;
     private bool canDash = true;
 
+    public Transform groundCheck;
+    public float groundCheckRadius = 0.2f;
+    public LayerMask groundLayer;
+
+    //variables for wall sliding and jumping
+    public float wallSlideSpeed = 2f;
+    public float wallCheckDistance = 0.5f;
+    public Vector2 wallJumpForce = new Vector2(10f, 14f);
+    public float wallJumpDuration = 0.2f;
     private bool isWallSliding;
     private bool isWalljumping;
 
+    public float jumpBufferTime = 0.1f;
     private float jumpBufferCounter;
 
+    public float coyoteTime = 0.1f;
     private float coyoteTimer;
+
+    //range means this variable can never be outside this range
+    [Range(0f, 1f)]public float jumpCutMultiplier = 0.5f;
+    public float fallMultiplier = 1.8f;
+    public float lowJumpMultiplier = 2.5f;
+
+    private Rigidbody2D rb;
+    private float moveInput;
 
     private void Awake()
     {
