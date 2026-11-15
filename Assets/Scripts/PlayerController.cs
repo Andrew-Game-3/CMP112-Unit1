@@ -67,11 +67,16 @@ public class PlayerController : MonoBehaviour
     private bool isCrouching;
     private bool isCollidorCrouched;
 
+    private BoxCollider2D boxCollider2D;
+    private Vector2 defaultBoxCollidor2DSize;
+    private Vector2 defaultBoxCollidor2DPosition;
+
     private void Awake()
     {
      rb = GetComponent<Rigidbody2D>();
      trailRenderer = GetComponent<TrailRenderer>();
         defaultGravityScale = rb.gravityScale;
+        boxCollider2D = GetComponent<BoxCollider2D>();
     }
 
     private void ReadInput()
@@ -367,8 +372,13 @@ public class PlayerController : MonoBehaviour
             return;
         }
         isCollidorCrouched = crouched;
-        //? creates a ternay statement (like an if statement in one line)
-        transform.localScale = crouched ? new Vector3(1f, 0.475f, 1f) : Vector3.one;
+
+        if (crouched)
+        {
+            boxCollider2D.size = new Vector2(defaultBoxCollidor2DSize.x, defaultBoxCollidor2DSize.y)*0.475f;
+            boxCollider2D.offset = new Vector2(defaultBoxCollidor2DPosition.x, defaultBoxCollidor2DPosition.y) - (defaultBoxCollidor2DSize)
+        }
+       
     }
 
     private bool HasCelling()
