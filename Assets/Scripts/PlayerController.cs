@@ -61,11 +61,14 @@ public class PlayerController : MonoBehaviour
 
     private MovingPlatform movingPlatform;
 
+    private Animator animator;
+
     private void Awake()
     {
      rb = GetComponent<Rigidbody2D>();
      trailRenderer = GetComponent<TrailRenderer>();
         defaultGravityScale = rb.gravityScale;
+        animator = GetComponent<Animator>();
     }
 
     private void ReadInput()
@@ -123,6 +126,7 @@ public class PlayerController : MonoBehaviour
         UpdateJumpTimers();
         ReadInput();
         Jump();
+        UpdateAnimation();
     }
 
     private void FixedUpdate()
@@ -331,4 +335,32 @@ public class PlayerController : MonoBehaviour
             movingPlatform = null;
         }
     }
+
+    void UpdateAnimation()
+    {
+        if(!isGrounded())
+        {
+            if (isClimbing)
+            {
+                animator.Play("playerClimb");
+            }
+            else
+            {
+                animator.Play("playerJump");
+            }
+        }
+
+        else if (moveInput != 0f)
+        {
+            animator.Play("playerWalk");
+        }
+
+        
+        else
+        {
+            animator.Play("playerIdle");
+        }
+    }
+
+   
 }
