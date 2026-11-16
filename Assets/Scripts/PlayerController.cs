@@ -67,19 +67,16 @@ public class PlayerController : MonoBehaviour
     private bool isCrouching;
     private bool isCollidorCrouched;
 
-    private BoxCollider2D boxCollider2D;
-    private Vector2 defaultBoxCollidor2DSize;
-    private Vector2 defaultBoxCollidor2DPosition;
-    private float crouchHeightMultiplier = 0.475f;
+    public Collider2D standingCollidor;
+    public Collider2D crouchingCollidor;
 
     private void Awake()
     {
      rb = GetComponent<Rigidbody2D>();
      trailRenderer = GetComponent<TrailRenderer>();
         defaultGravityScale = rb.gravityScale;
-        boxCollider2D = GetComponent<BoxCollider2D>();
-        defaultBoxCollidor2DPosition = boxCollider2D.size;
-        defaultBoxCollidor2DSize    = boxCollider2D.offset;
+        standingCollidor = GetComponent<PolygonCollider2D>();
+        crouchingCollidor = GetComponent<BoxCollider2D>();
     }
 
     private void ReadInput()
@@ -370,28 +367,22 @@ public class PlayerController : MonoBehaviour
 
 
 
-private void SetCrouched(bool crouched)
-{
-    if (crouched == isCollidorCrouched) return;
-    isCollidorCrouched = crouched;
-
-    if (crouched)
+    private void SetCrouched(bool crouched)
     {
-        boxCollider2D.size = new Vector2(
-            defaultBoxCollidor2DSize.x,
-            defaultBoxCollidor2DSize.y * crouchHeightMultiplier);
+        if (crouched == isCollidorCrouched) return;
+        isCollidorCrouched = crouched;
 
-        boxCollider2D.offset = new Vector2(
-            defaultBoxCollidor2DPosition.x,
-            defaultBoxCollidor2DPosition.y
-                - defaultBoxCollidor2DSize.y * (1f - crouchHeightMultiplier) / 2f);
+        if (crouched)
+        {
+            standingCollidor.enabled = false;
+            crouchingCollidor.enabled = true;
+        }
+        else
+        {
+            standingCollidor.enabled = true;
+            crouchingCollidor.enabled = false;
+        }
     }
-    else
-    {
-        boxCollider2D.size = defaultBoxCollidor2DSize;
-        boxCollider2D.offset = defaultBoxCollidor2DPosition;
-    }
-}
 
     private bool HasCelling()
     {
@@ -399,4 +390,6 @@ private void SetCrouched(bool crouched)
         //creates circle and checks if touching celling of a ground layer object
         return Physics2D.OverlapCircle(checkPos, cellingCheckRadius, groundLayer);
     }
+
+
 }
