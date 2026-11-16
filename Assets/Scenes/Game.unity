@@ -1418,7 +1418,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 128
   crouchSpeedMultiplier: 0.4
-  cellingCheckHeight: 0.95
+  cellingCheckHeight: 0.475
   cellingCheckRadius: 0.2
   standingCollidor: {fileID: 205431244}
   crouchingCollidor: {fileID: 205431246}

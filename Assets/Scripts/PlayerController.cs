@@ -62,7 +62,7 @@ public class PlayerController : MonoBehaviour
     private MovingPlatform movingPlatform;
 
     public float crouchSpeedMultiplier = 0.4f;
-    public float cellingCheckHeight = 0.95f;
+    public float cellingCheckHeight = 0.475f;
     public float cellingCheckRadius = 0.2f;
     private bool isCrouching;
     private bool isCollidorCrouched;
