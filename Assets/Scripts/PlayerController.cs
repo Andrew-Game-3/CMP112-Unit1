@@ -394,5 +394,33 @@ public class PlayerController : MonoBehaviour
         return Physics2D.OverlapCircle(checkPos, cellingCheckRadius, groundLayer);
     }
 
+    void UpdateAnimation()
+    {
+        if (!isGrounded())
+        {
+            if (isClimbing)
+            {
+                animator.Play("playerClimb");
+            }
+            else
+            {
+                animator.Play("playerJump");
+            }
+        }
+
+        else if (moveInput != 0f)
+        {
+            animator.Play("playerWalk");
+        }
+
+
+        else
+        {
+            animator.Play("playerIdle");
+        }
+    }
+
+
+}
 
 }
