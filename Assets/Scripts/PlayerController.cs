@@ -61,11 +61,22 @@ public class PlayerController : MonoBehaviour
 
     private MovingPlatform movingPlatform;
 
+    public float crouchSpeedMultiplier = 0.4f;
+    public float cellingCheckHeight = 0.95f;
+    public float cellingCheckRadius = 0.2f;
+    private bool isCrouching;
+    private bool isCollidorCrouched;
+
+    public Collider2D standingCollidor;
+    public Collider2D crouchingCollidor;
+
     private void Awake()
     {
      rb = GetComponent<Rigidbody2D>();
      trailRenderer = GetComponent<TrailRenderer>();
         defaultGravityScale = rb.gravityScale;
+        standingCollidor = GetComponent<PolygonCollider2D>();
+        crouchingCollidor = GetComponent<BoxCollider2D>();
     }
 
     private void ReadInput()
@@ -127,6 +138,7 @@ public class PlayerController : MonoBehaviour
 
     private void FixedUpdate()
     {
+        HandleCrouch();
         Move();
         WallSlide();
         ApplyBetterGravity();
@@ -183,7 +195,11 @@ public class PlayerController : MonoBehaviour
         {
             movingPlatformSpeed = movingPlatform.platformSpeed;
         }
-        rb.linearVelocityX = moveInput * speed + movingPlatformSpeed.x;
+
+        // ? makes if statement like "if : else"
+        float crouchMoveSpeed = isCrouching ? crouchSpeedMultiplier : 1f;
+
+        rb.linearVelocityX = crouchMoveSpeed * moveInput * speed + movingPlatformSpeed.x;
     }
        
     private IEnumerator Dash()
@@ -331,4 +347,49 @@ public class PlayerController : MonoBehaviour
             movingPlatform = null;
         }
     }
+
+    private void HandleCrouch()
+    {
+        if(isClimbing)
+        {
+            return;
+        }
+
+        //checks if we're pressing the s key, as if we are, this will be true
+        bool wantsToCrouch = verticalInput < 0f;
+
+        //either if we pressing s key or stuck in a small hole already crouching
+        isCrouching = wantsToCrouch || (isCrouching && HasCelling());
+
+        SetCrouched(isCrouching);
+
+    }
+
+
+
+    private void SetCrouched(bool crouched)
+    {
+        if (crouched == isCollidorCrouched) return;
+        isCollidorCrouched = crouched;
+
+        if (crouched)
+        {
+            standingCollidor.enabled = false;
+            crouchingCollidor.enabled = true;
+        }
+        else
+        {
+            standingCollidor.enabled = true;
+            crouchingCollidor.enabled = false;
+        }
+    }
+
+    private bool HasCelling()
+    {
+        Vector2 checkPos = (Vector2)transform.position + Vector2.up * cellingCheckHeight;
+        //creates circle and checks if touching celling of a ground layer object
+        return Physics2D.OverlapCircle(checkPos, cellingCheckRadius, groundLayer);
+    }
+
+
 }
