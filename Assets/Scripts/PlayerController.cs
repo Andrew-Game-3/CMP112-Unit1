@@ -70,6 +70,7 @@ public class PlayerController : MonoBehaviour
     private BoxCollider2D boxCollider2D;
     private Vector2 defaultBoxCollidor2DSize;
     private Vector2 defaultBoxCollidor2DPosition;
+    private float crouchHeightMultiplier = 0.475f;
 
     private void Awake()
     {
@@ -77,6 +78,8 @@ public class PlayerController : MonoBehaviour
      trailRenderer = GetComponent<TrailRenderer>();
         defaultGravityScale = rb.gravityScale;
         boxCollider2D = GetComponent<BoxCollider2D>();
+        defaultBoxCollidor2DPosition = boxCollider2D.size;
+        defaultBoxCollidor2DSize    = boxCollider2D.offset;
     }
 
     private void ReadInput()
@@ -365,21 +368,30 @@ public class PlayerController : MonoBehaviour
 
     }
 
-    private void SetCrouched(bool crouched)
-    {
-        if(crouched == isCollidorCrouched)
-        {
-            return;
-        }
-        isCollidorCrouched = crouched;
 
-        if (crouched)
-        {
-            boxCollider2D.size = new Vector2(defaultBoxCollidor2DSize.x, defaultBoxCollidor2DSize.y)*0.475f;
-            boxCollider2D.offset = new Vector2(defaultBoxCollidor2DPosition.x, defaultBoxCollidor2DPosition.y) - (defaultBoxCollidor2DSize)
-        }
-       
+
+private void SetCrouched(bool crouched)
+{
+    if (crouched == isCollidorCrouched) return;
+    isCollidorCrouched = crouched;
+
+    if (crouched)
+    {
+        boxCollider2D.size = new Vector2(
+            defaultBoxCollidor2DSize.x,
+            defaultBoxCollidor2DSize.y * crouchHeightMultiplier);
+
+        boxCollider2D.offset = new Vector2(
+            defaultBoxCollidor2DPosition.x,
+            defaultBoxCollidor2DPosition.y
+                - defaultBoxCollidor2DSize.y * (1f - crouchHeightMultiplier) / 2f);
     }
+    else
+    {
+        boxCollider2D.size = defaultBoxCollidor2DSize;
+        boxCollider2D.offset = defaultBoxCollidor2DPosition;
+    }
+}
 
     private bool HasCelling()
     {
