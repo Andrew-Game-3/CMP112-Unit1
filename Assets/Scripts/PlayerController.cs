@@ -137,6 +137,7 @@ public class PlayerController : MonoBehaviour
         UpdateJumpTimers();
         ReadInput();
         Jump();
+        UpdateAnimation();
     }
 
     private void FixedUpdate()
@@ -410,8 +411,23 @@ public class PlayerController : MonoBehaviour
 
         else if (moveInput != 0f)
         {
-            animator.Play("playerWalk");
+            if (isCrouching)
+            {
+                animator.Play("playerCrouch");
+            }
+
+            else
+            {
+                animator.Play("playerWalk");
+            }
         }
+
+        else if(isCrouching)
+        {
+            animator.Play("playerCrouch");
+        }
+       
+      
 
 
         else
@@ -423,4 +439,4 @@ public class PlayerController : MonoBehaviour
 
 }
 
-}
+
