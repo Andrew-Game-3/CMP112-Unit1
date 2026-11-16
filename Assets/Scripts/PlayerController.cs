@@ -70,6 +70,8 @@ public class PlayerController : MonoBehaviour
     public Collider2D standingCollidor;
     public Collider2D crouchingCollidor;
 
+    private Animator animator;
+
     private void Awake()
     {
      rb = GetComponent<Rigidbody2D>();
@@ -77,6 +79,7 @@ public class PlayerController : MonoBehaviour
         defaultGravityScale = rb.gravityScale;
         standingCollidor = GetComponent<PolygonCollider2D>();
         crouchingCollidor = GetComponent<BoxCollider2D>();
+        animator = GetComponent<Animator>();
     }
 
     private void ReadInput()
