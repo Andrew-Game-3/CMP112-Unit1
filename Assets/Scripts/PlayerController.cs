@@ -67,6 +67,7 @@ public class PlayerController : MonoBehaviour
     private bool isCrouching;
     private bool isCollidorCrouched;
 
+    
     public Collider2D standingCollidor;
     public Collider2D crouchingCollidor;
 
@@ -86,6 +87,7 @@ public class PlayerController : MonoBehaviour
     {
         Keyboard kb = Keyboard.current;
 
+        //stop player running of when no keys pressed
         moveInput = 0f;
 
         //left and right inputs
@@ -142,6 +144,7 @@ public class PlayerController : MonoBehaviour
 
     private void FixedUpdate()
     {
+        //physics stuff only in here
         HandleCrouch();
         Move();
         WallSlide();
@@ -181,6 +184,7 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    //can now use this method to check if grounded, as it will return true
     private bool isGrounded()
     {
         return Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, groundLayer);
@@ -206,8 +210,10 @@ public class PlayerController : MonoBehaviour
         rb.linearVelocityX = crouchMoveSpeed * moveInput * speed + movingPlatformSpeed.x;
     }
        
+    //using coroutine lets us wait within code till dash is finished and till can dash agaian
     private IEnumerator Dash()
     {
+        //need to turn of gravity while dashing
         isDashing = true;
         canDash = false;
         rb.gravityScale = 0;
@@ -233,6 +239,7 @@ public class PlayerController : MonoBehaviour
   
    private void WallSlide()
     {
+        //lets us check if plaer is wall sliding, as this will be true if the player is touching wall and isn't grounded and isn't jumping away from wall or climbing
         isWallSliding = isTouchingWall() && !isGrounded() && !isWalljumping && !isClimbing;
 
         if(isWallSliding)
@@ -243,6 +250,7 @@ public class PlayerController : MonoBehaviour
         trailRenderer.emitting = isWallSliding || isDashing;
     }
 
+    //use Coroutine to allow us to wait for an amount of time
     private IEnumerator wallJump()
     {
         isWalljumping = true;
@@ -254,12 +262,15 @@ public class PlayerController : MonoBehaviour
         isWalljumping = false;
     }
 
+    //uses delta time to avoid different framerates having different timings for Coyote time
     private void UpdateJumpTimers()
     {
+        //only starts to update when player on ground and they aren't actively moving up
         if (isGrounded() && rb.linearVelocityY <= 0.01f)
         {
             coyoteTimer = coyoteTime;
         }
+        //else we start to tick timers down, caus e it means they ae in the air
         else
         {
             coyoteTimer = coyoteTimer -Time.deltaTime;
@@ -297,6 +308,7 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    //can use this method elsewhere to easily check if player on ladder
     private bool isOnLadder()
     {
         //creates a circle. If cirlce overlaps with ladder, it will return true, otherwise the method will return false
@@ -336,6 +348,7 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    //parents player to moving platform to let them move with it
     private void OnCollisionEnter2D(Collision2D collision)
     {
         if(collision.gameObject.GetComponent<MovingPlatform>() != null)
@@ -344,6 +357,7 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    //unparents player when they leave
     private void OnCollisionExit2D(Collision2D collision)
     {
         if (collision.gameObject.GetComponent<MovingPlatform>() != null)
@@ -395,6 +409,7 @@ public class PlayerController : MonoBehaviour
         return Physics2D.OverlapCircle(checkPos, cellingCheckRadius, groundLayer);
     }
 
+    //can maybe multiply player scale by -1 on y to reverse these later?
     void UpdateAnimation()
     {
         if (!isGrounded())

@@ -9,7 +9,9 @@ public class FinishFlag : MonoBehaviour
     {
         if(collision.gameObject.tag == "Player")
         {
+            //freeze time
             Time.timeScale = 0;
+            //make ui visible
             winUI.SetActive(true);
         }
     }
