@@ -320,6 +320,11 @@ MonoBehaviour:
   LadderLayer:
     serializedVersion: 2
     m_Bits: 128
+  crouchSpeedMultiplier: 0.4
+  cellingCheckHeight: 0.475
+  cellingCheckRadius: 0.2
+  standingCollidor: {fileID: 0}
+  crouchingCollidor: {fileID: 0}
 --- !u!60 &205431244
 PolygonCollider2D:
   m_ObjectHideFlags: 0
@@ -534,7 +539,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 691daff9fdc9af04992b4d732c7b80a9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerDamage
-  enemy: {fileID: 0}
 --- !u!61 &205431248
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -8886,11 +8890,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 301967947753465621, guid: 3924d15c4334b4f4ea5c851a1d18992b, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 2.0573187
+      value: 5.85
       objectReference: {fileID: 0}
     - target: {fileID: 301967947753465621, guid: 3924d15c4334b4f4ea5c851a1d18992b, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -1.5795858
+      value: -0.9
       objectReference: {fileID: 0}
     - target: {fileID: 301967947753465621, guid: 3924d15c4334b4f4ea5c851a1d18992b, type: 3}
       propertyPath: m_LocalPosition.z
