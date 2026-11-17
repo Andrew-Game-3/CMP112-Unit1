@@ -1652,7 +1652,11 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
+<<<<<<< Updated upstream
     spriteID: fd8d1b79d921c7d49952c6c79f496d2c
+=======
+    spriteID: 86c9a272aa3985b42907fd257e64d4c3
+>>>>>>> Stashed changes
     internalID: 0
     vertices: []
     indices: 
